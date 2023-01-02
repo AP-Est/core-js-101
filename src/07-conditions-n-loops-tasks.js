@@ -126,8 +126,13 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  const x = rect1.left > rect2.width;
+  const y = rect1.width < rect2.left;
+  const z = rect1.height < rect2.top;
+  const c = rect1.top > rect2.height;
+
+  return !(x || y || c || z);
 }
 
 
@@ -157,8 +162,12 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  const x = (point.x - circle.center.x) ** 2;
+  const y = (point.y - circle.center.y) ** 2;
+  const c = circle.radius ** 2;
+  if (x + y < c) return true;
+  return false;
 }
 
 
@@ -173,8 +182,11 @@ function isInsideCircle(/* circle, point */) {
  *   'abracadabra'  => 'c'
  *   'entente' => null
  */
-function findFirstSingleChar(/* str */) {
-  throw new Error('Not implemented');
+function findFirstSingleChar(str) {
+  return str
+    .split('')
+    .filter((e) => str.indexOf(e) === str.lastIndexOf(e))
+    .shift();
 }
 
 
@@ -319,8 +331,17 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  let res = str;
+  const arr = ['[]', '<>', '{}', '()'];
+  const check = () => arr.filter((b) => res.includes(b)).length !== 0;
+  const replace = (e) => {
+    res = res.replace(e, '');
+  };
+  while (check()) {
+    arr.forEach((e) => replace(e));
+  }
+  return res.length === 0;
 }
 
 
@@ -344,8 +365,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 
@@ -361,8 +382,12 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const string = pathes.join('|');
+  const res = string.match(/^([^|]*\/)[^|]*(\|\1[^|]*)*$/);
+  return res
+    ? res[1]
+    : '';
 }
 
 
@@ -384,20 +409,28 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const x = (e) => e[0].map((col, i) => e.map((arr) => arr[i]));
+  const columns = x(m2);
+  return m1.map((arr) => {
+    const init = [];
+    return columns.reduce((a, c) => {
+      const el = c.reduce((y, n, i) => arr[i] * n + y, 0);
+      return [...a, el];
+    }, init);
+  });
 }
 
 
 /**
- * Returns the evaluation of the specified tic-tac-toe position.
+ * Returns the evaluation of the specified tic-tac-toe sh.
  * See the details: https://en.wikipedia.org/wiki/Tic-tac-toe
  *
- * Position is provides as 3x3 array with the following values: 'X','0', undefined
- * Function should return who is winner in the current position according to the game rules.
+ * sh is provides as 3x3 array with the following values: 'X','0', undefined
+ * Function should return who is winner in the current sh according to the game rules.
  * The result can be: 'X','0',undefined
  *
- * @param {array} position
+ * @param {array} sh
  * @return {string}
  *
  * @example
@@ -419,8 +452,25 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const sh = position;
+  if (sh[0][0] === sh[0][1] && sh[0][0] === sh[0][2]
+    && sh[0][0] !== undefined) return sh[0][0];
+  if (sh[1][0] === sh[1][1] && sh[1][0] === sh[1][2]
+    && sh[1][0] !== undefined) return sh[1][0];
+  if (sh[2][0] === sh[2][1] && sh[2][0] === sh[2][2]
+    && sh[2][0] !== undefined) return sh[2][0];
+  if (sh[0][0] === sh[1][0] && sh[0][0] === sh[2][0]
+    && sh[0][0] !== undefined) return sh[0][0];
+  if (sh[0][1] === sh[1][1] && sh[0][1] === sh[2][1]
+    && sh[0][1] !== undefined) return sh[0][1];
+  if (sh[0][2] === sh[1][2] && sh[0][2] === sh[2][2]
+    && sh[0][2] !== undefined) return sh[0][2];
+  if (sh[0][0] === sh[1][1] && sh[0][0] === sh[2][2]
+    && sh[0][0] !== undefined) return sh[0][0];
+  if (sh[0][2] === sh[1][1] && sh[0][2] === sh[2][0]
+    && sh[2][0] !== undefined) return sh[2][0];
+  return undefined;
 }
 
 
